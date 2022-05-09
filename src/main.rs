@@ -11,33 +11,13 @@ fn main() {
     println!("Sistema de tamanho {}x{}", input_x, input_y);
 
     let v_valores_do_sistema = comandos::gerenciar_comandos::valor_no_array(input_x, input_y);
-    //
+
     println!("Sistema Original:\n{:?}\n", &v_valores_do_sistema);
 
     let calc_sis_lin = Calcular::definir_valores(input_x, input_y, v_valores_do_sistema);
 
-    // Calcular::iniciar_calculo_do_sistema(&calc_sis_lin);
-    // let mut vetor_dos_valores = vec![
-    //     vec![1.0, 1.5, -2.0],
-    //     vec![2.0, 1.0, -1.0],
-    //     vec![3.0, -1.0, 2.0],
-    // ];
-
-    // let mut vetor_dos_valores = vec![
-    //     vec![4.0, 3.0, -2.0, 3.0],
-    //     vec![3.0, 2.0, 4.0, 1.0],
-    //     vec![1.0, 1.0, 2.0, 2.0],
-    // ];
-
-    // let mut vetor_dos_valores = vec![
-    //     vec![10.0, 5.0, -1.0, 1.0, 2.0],
-    //     vec![2.0, 10.0, -2.0, -1.0, -26.0],
-    //     vec![-1.0, -2.0, 10.0, 2.0, 20.0],
-    //     vec![1.0, 3.0, 2.0, 10.0, -25.0],
-    // ];
-
-    let resultado = Calcular::resolver_valores(calc_sis_lin);
-    println!("{:?}", resultado);
+    Calcular::imprimir_resultado(calc_sis_lin);
+    // Calcular::prova_real(calc_sis_lin, &v2);
 }
 
 pub mod comandos {
@@ -135,7 +115,7 @@ pub mod calcular_sistema {
             }
         }
 
-        pub fn resolver_valores(
+        fn resolver_valores(
             Self {
                 valor_x,
                 valor_y,
@@ -156,11 +136,56 @@ pub mod calcular_sistema {
                     }
                 }
             }
+
             vetor_valores
         }
 
-        // pub fn valores_de_x(self) {
-        //     let resultado = Calcular::resolver_valores(self);
-        // }
+        fn valores_de_x(self) -> Vec<f64> {
+            let res = Calcular::resolver_valores(self);
+            let (qnt_lin, qnt_val) = (res.len() - 1, res[0].len() - 1);
+
+            let mut valor_final_x: Vec<f64> = Vec::new();
+            let mut multiplicar_x = 0.0;
+            let mut pivo_res = 0;
+
+            println!("Sistema resolvido!\n{:?}\n", &res);
+
+            for _l in 0..qnt_lin {
+                valor_final_x.push(0.0);
+            }
+
+            valor_final_x.push(res[qnt_lin][qnt_val] / res[qnt_lin][qnt_val - 1]);
+
+            for linhas in (0..qnt_lin).rev() {
+                for valores in (0..qnt_val).rev() {
+                    if linhas == valores {
+                        continue;
+                    }
+
+                    multiplicar_x -= &res[linhas][valores] * valor_final_x[valores];
+                }
+                multiplicar_x += &res[linhas][qnt_val];
+                multiplicar_x /= &res[linhas][linhas];
+
+                valor_final_x.insert(qnt_lin - pivo_res, multiplicar_x);
+                valor_final_x.remove(0);
+
+                pivo_res += 1;
+                multiplicar_x = 0.0;
+            }
+
+            valor_final_x
+        }
+
+        pub fn imprimir_resultado(self) {
+            let res = Calcular::valores_de_x(self);
+            let mut index_val = 1;
+
+            for i in res {
+                println!("X{} = {}", index_val, i);
+
+                index_val += 1;
+            }
+        }
     }
 }
