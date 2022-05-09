@@ -17,7 +17,6 @@ fn main() {
     let calc_sis_lin = Calcular::definir_valores(input_x, input_y, v_valores_do_sistema);
 
     Calcular::imprimir_resultado(calc_sis_lin);
-    // Calcular::prova_real(calc_sis_lin, &v2);
 }
 
 pub mod comandos {
